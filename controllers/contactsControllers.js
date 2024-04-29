@@ -34,13 +34,14 @@ export const createContact = async (req, res) => {
         phone: req.body.phone,
     }
 
-    const { error, value } = createContactSchema.validate(contact);
+    const { error } = createContactSchema.validate(contact);
 
     if (error) {
         res.status(400).send(JSON.stringify({ massage: HttpError(400).message }));
+        return
     }
 
-    res.status(201).send(await contactsService.addContact(value))
+    res.status(201).send(await contactsService.addContact(contact))
 };
 
 export const updateContact = async (req, res) => {
@@ -58,7 +59,7 @@ export const updateContact = async (req, res) => {
         return
     }
 
-    const { error, value } = updateContactSchema.validate(contact);
+    const { error } = updateContactSchema.validate(contact);
 
     if (error) {
         res.status(400).send(JSON.stringify({ massage: HttpError(400).message }));
@@ -66,7 +67,7 @@ export const updateContact = async (req, res) => {
     }
 
     try {
-        res.status(200).send(await contactsService.updateContact(value, id));
+        res.status(200).send(await contactsService.updateContact(contact, id));
     } catch (error) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
     }
