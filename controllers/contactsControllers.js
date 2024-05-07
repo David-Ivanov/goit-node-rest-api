@@ -5,31 +5,29 @@ import { createContactSchema, updateContactSchema } from "../schemas/contactsSch
 export const getAllContacts = async (req, res) => {
     const result = await Contact.find();
     res.json(result);
+    return
 };
 
 export const getOneContact = async (req, res) => {
     const { id } = req.params;
 
-    const result = await Contact.findById(id);
-
-    if (!result) {
+    try {
+        const result = await Contact.findById(id);
+        res.status(200).json(result);
+    } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
     }
-
-    res.status(200).json(result);
 };
 
 export const deleteContact = async (req, res) => {
     const { id } = req.params;
 
-    const result = await Contact.findByIdAndDelete(id);
-
-    if (!result) {
+    try {
+        const result = await Contact.findByIdAndDelete(id);
+        res.status(200).json(result);
+    } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
     }
-
-    res.status(201).json(result);
-
 };
 
 export const createContact = async (req, res) => {
@@ -45,7 +43,7 @@ export const createContact = async (req, res) => {
         return
     }
 
-    const result = await Contact.create(contact)
+    const result = await Contact.create(contact);
 
     res.status(201).send(result)
 };
@@ -67,14 +65,14 @@ export const updateContact = async (req, res) => {
         return
     }
 
-    const result = await Contact.findByIdAndUpdate(id, contact);
 
-    if (!result) {
+    try {
+        await Contact.findByIdAndUpdate(id, contact);
+        res.status(200).json(await Contact.findById(id));
+    } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
-        return
-    }
 
-    res.status(200).json(await Contact.findById(id));
+    }
 };
 
 export const updateStatusContact = async (req, res) => {
