@@ -24,6 +24,10 @@ export const deleteContact = async (req, res) => {
 
     try {
         const result = await Contact.findByIdAndDelete(id);
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
         res.status(200).json(result);
     } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
