@@ -13,6 +13,12 @@ export const getOneContact = async (req, res) => {
 
     try {
         const result = await Contact.findById(id);
+
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
+
         res.status(200).json(result);
     } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
@@ -71,7 +77,13 @@ export const updateContact = async (req, res) => {
 
 
     try {
-        await Contact.findByIdAndUpdate(id, contact);
+        const result = await Contact.findByIdAndUpdate(id, contact);
+
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
+
         res.status(200).json(await Contact.findById(id));
     } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
@@ -85,7 +97,13 @@ export const updateStatusContact = async (req, res) => {
 
 
     try {
-        await Contact.findByIdAndUpdate(id, body);
+        const result = await Contact.findByIdAndUpdate(id, body);
+
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
+
         res.status(200).json(await Contact.findById(id));
     } catch (error) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
