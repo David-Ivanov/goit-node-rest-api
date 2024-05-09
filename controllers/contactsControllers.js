@@ -1,27 +1,40 @@
 import HttpError from "../helpers/HttpError.js";
+import Contact from "../models/contactsModel.js";
 import { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas.js";
-import * as contactsService from "../services/contactsServices.js";
 
 export const getAllContacts = async (req, res) => {
-    res.status(200).send(await contactsService.listContacts());
+    const result = await Contact.find();
+    res.json(result);
+    return
 };
 
 export const getOneContact = async (req, res) => {
     const { id } = req.params;
 
     try {
-        res.status(200).send(await contactsService.getContactById(id));
+        const result = await Contact.findById(id);
+
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
+
+        res.status(200).json(result);
     } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
     }
-
 };
 
 export const deleteContact = async (req, res) => {
     const { id } = req.params;
 
     try {
-        res.status(200).send(await contactsService.removeContact(id));
+        const result = await Contact.findByIdAndDelete(id);
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
+        res.status(200).json(result);
     } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
     }
@@ -29,9 +42,8 @@ export const deleteContact = async (req, res) => {
 
 export const createContact = async (req, res) => {
     const contact = {
-        name: req.body.name,
-        email: req.body.email,
-        phone: req.body.phone,
+        ...req.body,
+        favorite: false,
     }
 
     const { error } = createContactSchema.validate(contact);
@@ -41,18 +53,15 @@ export const createContact = async (req, res) => {
         return
     }
 
-    res.status(201).send(await contactsService.addContact(contact))
+    const result = await Contact.create(contact);
+
+    res.status(201).send(result)
 };
 
 export const updateContact = async (req, res) => {
-
     const { id } = req.params;
 
-    const contact = {
-        name: req.body?.name,
-        email: req.body?.email,
-        phone: req.body?.phone,
-    }
+    const contact = { ...req.body }
 
     if (!contact.name && !contact.email && !contact.phone) {
         res.status(400).send(JSON.stringify({ massage: HttpError(400, "Body must have at least one field").message }));
@@ -66,9 +75,37 @@ export const updateContact = async (req, res) => {
         return
     }
 
+
     try {
-        res.status(200).send(await contactsService.updateContact(contact, id));
-    } catch (error) {
+        const result = await Contact.findByIdAndUpdate(id, contact);
+
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
+
+        res.status(200).json(await Contact.findById(id));
+    } catch (err) {
         res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
     }
 };
+
+export const updateStatusContact = async (req, res) => {
+    const { id } = req.params;
+
+    const body = req.body;
+
+
+    try {
+        const result = await Contact.findByIdAndUpdate(id, body);
+
+        if (!result) {
+            res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+            return
+        }
+
+        res.status(200).json(await Contact.findById(id));
+    } catch (error) {
+        res.status(404).send(JSON.stringify({ massage: HttpError(404).message }));
+    }
+}
