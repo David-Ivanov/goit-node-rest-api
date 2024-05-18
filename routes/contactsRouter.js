@@ -10,6 +10,7 @@ import {
 import auth from "../middleware/authMiddleware.js";
 
 const contactsRouter = express.Router();
+const jsonParse = express.json();
 
 contactsRouter.get("/", auth, getAllContacts);
 
@@ -17,9 +18,9 @@ contactsRouter.get("/:id", auth, getOneContact);
 
 contactsRouter.delete("/:id", auth, deleteContact);
 
-contactsRouter.post("/", auth, createContact);
+contactsRouter.post("/", auth, jsonParse, createContact);
 
-contactsRouter.put("/:id", auth, updateContact);
+contactsRouter.put("/:id", auth, jsonParse, updateContact);
 
 contactsRouter.patch("/:id/favorite", auth, updateStatusContact);
 

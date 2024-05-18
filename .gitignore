@@ -1,3 +1,11 @@
+# tmp
+tmp/*
+!tmp/.gitkeep
+
+#avatars
+public/avatars/*
+!public/avatars/.gitkeep
+
 # Logs
 logs
 *.log
