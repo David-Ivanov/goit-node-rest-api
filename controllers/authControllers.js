@@ -99,24 +99,3 @@ export const current = async (req, res) => {
 
     res.status(200).send({ email: result.email });
 }
-
-export const updateSubscription = async (req, res) => {
-    const { subscription } = req.body;
-
-    if (subscription !== "starter" && subscription !== "pro" && subscription !== "business") {
-        return res.status(400).send({ message: HttpError(400).message });
-    }
-
-    const authorizationHeader = req.headers.authorization.split(" ");
-    const token = authorizationHeader[1];
-
-    const data = jwt.decode(token);
-
-    await User.findByIdAndUpdate(data.id, { subscription });
-
-    res.status(200).send({ subscription });
-}
-
-export const updateAvatar = async (req, res) => {
-    res.status(200).send("ok");
-}
