@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { createRegisterSchema } from "../schemas/authSchemas.js";
 import User from "../models/authModel.js"
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 
 export const register = async (req, res) => {
     const { email, password } = req.body;
@@ -15,9 +16,15 @@ export const register = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    // add avatar
+
+    const avatarURL = gravatar.url(email, { s: 250, d: "identicon" }, true);
+    console.log(avatarURL);
+
     const user = {
         email,
         password: passwordHash,
+        avatarURL,
     }
 
     try {
@@ -91,21 +98,4 @@ export const current = async (req, res) => {
     const result = await User.findById(data.id);
 
     res.status(200).send({ email: result.email });
-}
-
-export const updateSubscription = async (req, res) => {
-    const { subscription } = req.body;
-
-    if (subscription !== "starter" && subscription !== "pro" && subscription !== "business") {
-        return res.status(400).send({ message: HttpError(400).message });
-    }
-
-    const authorizationHeader = req.headers.authorization.split(" ");
-    const token = authorizationHeader[1];
-
-    const data = jwt.decode(token);
-
-    await User.findByIdAndUpdate(data.id, { subscription });
-
-    res.status(200).send({ subscription });
 }

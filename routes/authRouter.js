@@ -1,13 +1,14 @@
 import express from "express";
-import { current, login, logout, register, updateSubscription } from "../controllers/authControllers.js";
+import { current, login, logout, register } from "../controllers/authControllers.js";
 import auth from "../middleware/authMiddleware.js";
 
-const userRouter = express.Router();
+const authRouter = express.Router();
 
-userRouter.post("/register", register);
-userRouter.post("/login", login);
-userRouter.post("/logout", auth, logout);
-userRouter.get("/current", auth, current);
-userRouter.patch("/", auth, updateSubscription)
+const jsonParse = express.json();
 
-export default userRouter;
+authRouter.post("/register", jsonParse, register);
+authRouter.post("/login", jsonParse, login);
+authRouter.post("/logout", auth, logout);
+authRouter.get("/current", auth, current);
+
+export default authRouter;
